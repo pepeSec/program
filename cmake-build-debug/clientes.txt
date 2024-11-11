@@ -6,3 +6,11 @@ Endereço: Rua A, 123
 E-mail: joao@empresa.com
 Data de Abertura: 01/01/2020
 
+Nome: Henrique
+CNPJ: 10203040506070
+Razão Social: Dahen LTDA
+Telefone: 11919931229
+Endereço: Rua angelina marques bonequini, n 144
+E-mail: dahen@empresa.com.br
+Data de Abertura: 21/10/2024
+

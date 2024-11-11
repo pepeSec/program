@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 // Função para buscar dados do cliente no arquivo "clientes.txt"
 void buscar_dados_cliente(const char *cnpj, GtkWidget **entries) {
@@ -13,71 +14,66 @@ void buscar_dados_cliente(const char *cnpj, GtkWidget **entries) {
     char linha[256];
     int encontrado = 0;
 
-    // Limpar os campos antes de realizar a busca
-    for (int i = 0; i < 9; i++) {
-        gtk_entry_set_text(GTK_ENTRY(entries[i]), "");
+    // Limpar os campos antes de realizar a busca, mas mantendo o CNPJ
+    for (int i = 0; i < 9; i++) {  // Ajustando para 9 campos
+        if (i != 1)  // Não limpar o campo do CNPJ
+            gtk_entry_set_text(GTK_ENTRY(entries[i]), "");
     }
 
+    // Variáveis temporárias para armazenar os dados
+    char nome[100] = "", cnpj_tmp[50] = "", razao_social[100] = "", telefone[50] = "";
+    char endereco[100] = "", email[100] = "", data_abertura[50] = "";
+
+    // Loop para ler todas as linhas do arquivo
     while (fgets(linha, sizeof(linha), file)) {
-        // Remover a quebra de linha no final
-        linha[strcspn(linha, "\n")] = 0;
+        // Verificar e extrair cada campo
+        if (strncmp(linha, "Nome: ", 6) == 0) {
+            sscanf(linha, "Nome: %[^\n]", nome);
+        } else if (strncmp(linha, "CNPJ: ", 6) == 0) {
+            sscanf(linha, "CNPJ: %[^\n]", cnpj_tmp);
 
-        // Procurar o CNPJ na linha lida
-        if (strstr(linha, cnpj)) {
-            encontrado = 1;
-
-            // Variáveis temporárias para armazenar os dados
-            char nome[100], razao_social[100], telefone[50], endereco[100], email[100], data_abertura[50];
-
-            // Usando strtok para separar os dados pelos delimitadores "|"
-            char *token = strtok(linha, "|");
-            int i = 0;
-
-            // Iterando sobre os tokens para ler os dados
-            while (token != NULL) {
-                switch (i) {
-                    case 0:
-                        sscanf(token, "Nome: %[^\n]", nome);
-                        break;
-                    case 1:
-                        sscanf(token, "CNPJ: %[^\n]", cnpj);
-                        break;
-                    case 2:
-                        sscanf(token, "Razão Social: %[^\n]", razao_social);
-                        break;
-                    case 3:
-                        sscanf(token, "Telefone: %[^\n]", telefone);
-                        break;
-                    case 4:
-                        sscanf(token, "Endereço: %[^\n]", endereco);
-                        break;
-                    case 5:
-                        sscanf(token, "E-mail: %[^\n]", email);
-                        break;
-                    case 6:
-                        sscanf(token, "Data de Abertura: %[^\n]", data_abertura);
-                        break;
-                    default:
-                        break;
-                }
-                token = strtok(NULL, "|");
-                i++;
+            // Verificar se o CNPJ encontrado corresponde ao CNPJ procurado
+            if (strcmp(cnpj_tmp, cnpj) == 0) {
+                encontrado = 1;
             }
+        } else if (strncmp(linha, "Razão Social: ", 13) == 0) {
+            sscanf(linha, "Razão Social: %[^\n]", razao_social);
+        } else if (strncmp(linha, "Telefone: ", 9) == 0) {
+            sscanf(linha, "Telefone: %[^\n]", telefone);
+        } else if (strncmp(linha, "Endereço: ", 9) == 0) {
+            sscanf(linha, "Endereço: %[^\n]", endereco);
+        } else if (strncmp(linha, "E-mail: ", 7) == 0) {
+            sscanf(linha, "E-mail: %[^\n]", email);
+        } else if (strncmp(linha, "Data de Abertura: ", 17) == 0) {
+            sscanf(linha, "Data de Abertura: %[^\n]", data_abertura);
+        }
 
-            // Preencher os campos com os dados lidos
-            gtk_entry_set_text(GTK_ENTRY(entries[0]), nome);            // Nome
-            gtk_entry_set_text(GTK_ENTRY(entries[1]), cnpj);            // CNPJ
-            gtk_entry_set_text(GTK_ENTRY(entries[2]), razao_social);   // Razão Social
-            gtk_entry_set_text(GTK_ENTRY(entries[3]), telefone);       // Telefone
-            gtk_entry_set_text(GTK_ENTRY(entries[4]), endereco);       // Endereço
-            gtk_entry_set_text(GTK_ENTRY(entries[5]), email);          // E-mail
-            gtk_entry_set_text(GTK_ENTRY(entries[6]), data_abertura);  // Data de Abertura
-
-            break;  // Encontrou o cliente, sai do loop
+        // Ao encontrar o CNPJ correspondente e ler todos os campos, interromper o loop
+        if (encontrado && linha[0] == '\n') {
+            break;
         }
     }
 
-    if (!encontrado) {
+    // Verificar se o CNPJ foi encontrado e preencher os campos
+    if (encontrado) {
+        gtk_entry_set_text(GTK_ENTRY(entries[0]), nome);            // Nome
+        gtk_entry_set_text(GTK_ENTRY(entries[1]), cnpj);            // CNPJ (não alterado)
+        gtk_entry_set_text(GTK_ENTRY(entries[2]), razao_social);    // Razão Social
+        gtk_entry_set_text(GTK_ENTRY(entries[3]), telefone);        // Telefone
+        gtk_entry_set_text(GTK_ENTRY(entries[4]), endereco);        // Endereço
+        gtk_entry_set_text(GTK_ENTRY(entries[5]), email);           // E-mail
+        gtk_entry_set_text(GTK_ENTRY(entries[6]), data_abertura);   // Data de Abertura
+
+        // Mensagens de debug para verificar conteúdo das variáveis
+        g_print("Dados extraídos:\n");
+        g_print("Nome: %s\n", nome);
+        g_print("CNPJ: %s\n", cnpj_tmp);
+        g_print("Razão Social: %s\n", razao_social);
+        g_print("Telefone: %s\n", telefone);
+        g_print("Endereço: %s\n", endereco);
+        g_print("E-mail: %s\n", email);
+        g_print("Data de Abertura: %s\n", data_abertura);
+    } else {
         g_print("CNPJ não encontrado.\n");
     }
 
@@ -92,7 +88,7 @@ void salvar_dados_ambientais(GtkWidget **entries) {
         return;
     }
 
-    fprintf(file, "Nome: %s\nCNPJ: %s\nRazão Social: %s\nTelefone: %s\nEndereço: %s\nE-mail: %s\nData de Abertura: %s\nQuantidade de Resíduos: %s\nEstimativa de Custos: %s\n\n",
+    fprintf(file, "Nome: %s\nCNPJ: %s\nRazão Social: %s\nTelefone: %s\nEndereço: %s\nE-mail: %s\nData de Abertura: %s\nData de Medição: %s\nQuantidade de Resíduos: %s\nEstimativa de Custos: %s\n\n",
             gtk_entry_get_text(GTK_ENTRY(entries[0])),
             gtk_entry_get_text(GTK_ENTRY(entries[1])),
             gtk_entry_get_text(GTK_ENTRY(entries[2])),
@@ -100,6 +96,7 @@ void salvar_dados_ambientais(GtkWidget **entries) {
             gtk_entry_get_text(GTK_ENTRY(entries[4])),
             gtk_entry_get_text(GTK_ENTRY(entries[5])),
             gtk_entry_get_text(GTK_ENTRY(entries[6])),
+            gtk_entry_get_text(GTK_ENTRY(entries[9])),  // Incluindo Data de Medição
             gtk_entry_get_text(GTK_ENTRY(entries[7])),
             gtk_entry_get_text(GTK_ENTRY(entries[8])));
 
@@ -129,15 +126,15 @@ void on_inserir_clicked(GtkWidget *widget, gpointer data) {
 // Função para abrir a janela de atualização de dados ambientais
 void open_ambiental_window() {
     GtkWidget *window, *vbox, *grid, *buscar_button, *inserir_button;
-    GtkWidget *labels[9];
-    static GtkWidget *entries[9]; // Array de campos de entrada
+    GtkWidget *labels[10];  // Ajuste para 10 labels
+    static GtkWidget *entries[10]; // Array de campos de entrada
     const char *label_texts[] = {
-        "Nome", "CNPJ", "Razão Social", "Telefone", "Endereço", "E-mail", "Data de Abertura", "Quantidade de Resíduos", "Estimativa de Custos"
+        "Nome", "CNPJ", "Razão Social", "Telefone", "Endereço", "E-mail", "Data de Abertura", "Quantidade de Resíduos", "Estimativa de Custos", "Data de Medição"
     };
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Atualização de Dados Ambientais");
-    gtk_window_set_default_size(GTK_WINDOW(window), 400, 500);
+    gtk_window_set_default_size(GTK_WINDOW(window), 400, 550);
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -147,39 +144,28 @@ void open_ambiental_window() {
     gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
     gtk_box_pack_start(GTK_BOX(vbox), grid, TRUE, TRUE, 0);
 
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 10; i++) {  // Ajustando para 10 campos
         labels[i] = gtk_label_new(label_texts[i]);
         entries[i] = gtk_entry_new();
 
-        // Tornar todos os campos somente leitura, exceto o CNPJ
-        if (i != 1) {  // O índice 1 corresponde ao campo CNPJ
-            gtk_widget_set_sensitive(entries[i], FALSE);  // Desabilita a edição
-            gtk_widget_set_name(entries[i], "readonly_entry");
+        // Tornar todos os campos somente leitura, exceto o CNPJ, Quantidade de Resíduos, Estimativa de Custos e Data de Medição
+        if (i != 1 && i != 7 && i != 8 && i != 9) {  // O índice 1 é o CNPJ, 7 é Quantidade de Resíduos, 8 é Estimativa de Custos, e 9 é Data de Medição
+            gtk_widget_set_sensitive(entries[i], FALSE);  // Desabilita edição
+            gtk_entry_set_text(GTK_ENTRY(entries[i]), "");  // Limpar dados existentes
+            gtk_widget_override_background_color(entries[i], GTK_STATE_FLAG_NORMAL, &(GdkRGBA){0.9, 0.9, 0.9, 1});  // Cor de fundo cinza
         }
 
         gtk_grid_attach(GTK_GRID(grid), labels[i], 0, i, 1, 1);
         gtk_grid_attach(GTK_GRID(grid), entries[i], 1, i, 1, 1);
     }
 
-    // Estilo CSS para os campos de leitura
-    GtkCssProvider *provider = gtk_css_provider_new();
-    gtk_css_provider_load_from_data(provider, "#readonly_entry { background-color: #E0E0E0; }", -1, NULL);
-    GtkStyleContext *context;
-    for (int i = 0; i < 7; i++) {
-        context = gtk_widget_get_style_context(entries[i]);
-        gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-    }
-
-    // Botão Buscar
     buscar_button = gtk_button_new_with_label("Buscar");
     g_signal_connect(buscar_button, "clicked", G_CALLBACK(on_buscar_clicked), entries);
     gtk_box_pack_start(GTK_BOX(vbox), buscar_button, FALSE, FALSE, 0);
 
-    // Botão Inserir
     inserir_button = gtk_button_new_with_label("Inserir");
     g_signal_connect(inserir_button, "clicked", G_CALLBACK(on_inserir_clicked), entries);
     gtk_box_pack_start(GTK_BOX(vbox), inserir_button, FALSE, FALSE, 0);
 
-    g_signal_connect(window, "destroy", G_CALLBACK(gtk_widget_destroy), window);
     gtk_widget_show_all(window);
 }
