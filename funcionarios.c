@@ -50,6 +50,7 @@ void salvar_dados_funcionario(const char *nome, const char *cpf, const char *car
 // Callback para o botão Salvar
 void on_salvar_funcionario_clicked(GtkWidget *widget, gpointer data) {
     GtkWidget **entries = (GtkWidget **)g_object_get_data(G_OBJECT(data), "entries");
+    GtkWidget *message_label = GTK_WIDGET(g_object_get_data(G_OBJECT(data), "message_label"));
 
     const char *nome = gtk_entry_get_text(GTK_ENTRY(entries[0]));
     const char *cpf = gtk_entry_get_text(GTK_ENTRY(entries[1]));
@@ -60,11 +61,12 @@ void on_salvar_funcionario_clicked(GtkWidget *widget, gpointer data) {
     const char *razao_social = gtk_entry_get_text(GTK_ENTRY(entries[6]));
 
     if (*nome == '\0' || *cpf == '\0' || *cargo == '\0' || *telefone == '\0' || *email == '\0' || *cnpj == '\0') {
-        g_print("Erro: Um ou mais campos de entrada estão vazios.\n");
+        gtk_label_set_text(GTK_LABEL(message_label), "Erro: Um ou mais campos de entrada estão vazios.");
         return;
     }
 
     salvar_dados_funcionario(nome, cpf, cargo, telefone, email, cnpj, razao_social);
+    gtk_label_set_text(GTK_LABEL(message_label), "Dados do funcionário salvos com sucesso!");
 }
 
 // Callback para o botão Buscar
@@ -82,7 +84,7 @@ void on_buscar_clicado(GtkWidget *widget, gpointer data) {
 
 // Função para abrir a janela de cadastro de funcionário
 void open_funcionario_window() {
-    GtkWidget *window, *vbox, *grid, *save_button, *buscar_button;
+    GtkWidget *window, *vbox, *grid, *save_button, *buscar_button, *message_label;
     GtkWidget *labels[7];
     static GtkWidget *entries[7];
     const char *label_texts[] = {
@@ -91,37 +93,37 @@ void open_funcionario_window() {
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Cadastro de Funcionários");
-    gtk_window_set_default_size(GTK_WINDOW(window), 550, 200);
+    gtk_window_set_default_size(GTK_WINDOW(window), 550, 250);
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-
-    // Centraliza a janela na tela
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
-    // Centralizando o grid no vbox
-    GtkWidget *alignment = gtk_alignment_new(0.5, 0.5, 0, 0);  // Alinhamento central
+    GtkWidget *alignment = gtk_alignment_new(0.5, 0.5, 0, 0);
     gtk_box_pack_start(GTK_BOX(vbox), alignment, TRUE, TRUE, 0);
 
     grid = gtk_grid_new();
     gtk_grid_set_row_spacing(GTK_GRID(grid), 5);
     gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
-    gtk_container_add(GTK_CONTAINER(alignment), grid);  // Adiciona o grid ao alinhamento centralizado
+    gtk_container_add(GTK_CONTAINER(alignment), grid);
 
-    // Adiciona os labels e campos de entrada em duas colunas
     for (int i = 0; i < 7; i++) {
         labels[i] = gtk_label_new(label_texts[i]);
         entries[i] = gtk_entry_new();
 
-        if (i == 6) {  // Torna o campo Razão Social somente leitura
+        if (i == 6) {  // Campo Razão Social somente leitura
             gtk_widget_set_sensitive(entries[i], FALSE);
             gtk_widget_set_name(entries[i], "readonly_entry");
         }
 
-        int row = i / 2;  // Linha em que o campo deve estar
-        int col = (i % 2) * 2;  // Coluna em que o campo deve estar
+        if (i == 1 || i == 3 || i == 5) {  // Restringe dígitos de CPF, Telefone e CNPJ
+            int max_length = (i == 1 || i == 3) ? 11 : 14;
+            gtk_entry_set_max_length(GTK_ENTRY(entries[i]), max_length);
+        }
 
+        int row = i / 2;
+        int col = (i % 2) * 2;
         gtk_grid_attach(GTK_GRID(grid), labels[i], col, row, 1, 1);
         gtk_grid_attach(GTK_GRID(grid), entries[i], col + 1, row, 1, 1);
     }
@@ -139,6 +141,10 @@ void open_funcionario_window() {
     save_button = gtk_button_new_with_label("Salvar");
     g_signal_connect(save_button, "clicked", G_CALLBACK(on_salvar_funcionario_clicked), window);
     gtk_box_pack_start(GTK_BOX(vbox), save_button, FALSE, FALSE, 0);
+
+    message_label = gtk_label_new(NULL);
+    gtk_box_pack_start(GTK_BOX(vbox), message_label, FALSE, FALSE, 0);
+    g_object_set_data(G_OBJECT(window), "message_label", message_label);
 
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_widget_destroy), window);
 

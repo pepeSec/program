@@ -1,0 +1,40 @@
+Nome: DANIELLY MARQUES
+CNPJ: 2110202321102023
+Razão Social: DAHEN GAMES
+Telefone: (11) 93021-4021
+Endereço: RUA ANTONNIO BATISTA NANTES 100 - ITUPEVA SP
+E-mail: DANIELLYBESSA150@GMAIL.COM
+Data de Abertura: 12/11/2024
+
+Nome: Henrique
+CNPJ: 10203040506070
+Razão Social: Dahen System
+Telefone: (11)91993-1229
+Endereço: Rua 3, nº144 - Itupeva/SP
+E-mail: dahensystem@empresa.com
+Data de Abertura: 12/10/2020
+
+Nome: Danielly
+CNPJ: 70605040302010
+Razão Social: System Developer
+Telefone: 11930214021
+Endereço: Rua 4, nº155 - Itupeva/SP
+E-mail: systemdeveloper@empresa.com
+Data de Abertura: 21/10/2022
+
+Nome: dsafgas
+CNPJ: 20304050607080
+Razão Social: fsdfsaf
+Telefone: 11923213213
+Endereço: gsdwsdw
+E-mail: fsdsadasd
+Data de Abertura: 21/10/2024
+
+Nome: dsadsadsa
+CNPJ: 65523474545443
+Razão Social: dsadasdas
+Telefone: 65964324343
+Endereço: dsdasdas
+E-mail: gdfdfsadsa
+Data de Abertura: 21/10/2020
+

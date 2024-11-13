@@ -1,0 +1,16 @@
+Nome: DANIELLY MARQUES
+CPF: 582.547.258-45
+Cargo: ANALISTA DE TI
+Telefone: (11) 93021-4021
+E-mail: DANIELLYBESSA150@GMAIL.COM
+CNPJ: 2110202321102023
+Razão Social: DAHEN GAMES
+
+Nome: Monica Ribeiro
+CPF: 56343412451
+Cargo: Analista de Planejamento Senior
+Telefone: 11964753845
+E-mail: monica.ribeiro@empresa.com
+CNPJ: 10203040506070
+Razão Social: Dahen System
+

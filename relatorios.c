@@ -2,13 +2,40 @@
 #include <string.h>
 #include <stdio.h>
 
-// Função para gerar o relatório de funcionários em um arquivo .xls
+// Função para abrir o explorador de arquivos e escolher o local de salvamento
+char* escolher_local_salvamento(const char* titulo) {
+    GtkWidget *dialog;
+    dialog = gtk_file_chooser_dialog_new(titulo, NULL, GTK_FILE_CHOOSER_ACTION_SAVE,
+                                         "_Cancelar", GTK_RESPONSE_CANCEL,
+                                         "_Salvar", GTK_RESPONSE_ACCEPT, NULL);
+
+    // Configura a extensão padrão para ".xls"
+    gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), "relatorio.xls");
+
+    char *nome_arquivo = NULL;
+
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+        nome_arquivo = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+    }
+
+    gtk_widget_destroy(dialog);
+    return nome_arquivo;
+}
+
+// Função para gerar o relatório de funcionários
 void gerar_relatorio_funcionarios(const char *cnpj) {
+    char *caminho_relatorio = escolher_local_salvamento("Salvar Relatório de Funcionários");
+    if (!caminho_relatorio) {
+        g_print("Salvamento cancelado.\n");
+        return;
+    }
+
     FILE *arquivo_funcionarios = fopen("funcionarios.txt", "r");
-    FILE *relatorio = fopen("relatorioFuncionarios.xls", "w");
+    FILE *relatorio = fopen(caminho_relatorio, "w");
 
     if (!arquivo_funcionarios || !relatorio) {
         g_print("Erro ao abrir os arquivos.\n");
+        g_free(caminho_relatorio);
         return;
     }
 
@@ -50,15 +77,23 @@ void gerar_relatorio_funcionarios(const char *cnpj) {
 
     fclose(arquivo_funcionarios);
     fclose(relatorio);
+    g_free(caminho_relatorio);
 }
 
-// Função para gerar o relatório de dados ambientais em um arquivo .xls
+// Função para gerar o relatório de dados ambientais
 void gerar_relatorio_dados_ambientais(const char *cnpj) {
+    char *caminho_relatorio = escolher_local_salvamento("Salvar Relatório de Dados Ambientais");
+    if (!caminho_relatorio) {
+        g_print("Salvamento cancelado.\n");
+        return;
+    }
+
     FILE *arquivo_dados_ambientais = fopen("dadosAmbientais.txt", "r");
-    FILE *relatorio = fopen("relatorioDadosAmbientais.xls", "w");
+    FILE *relatorio = fopen(caminho_relatorio, "w");
 
     if (!arquivo_dados_ambientais || !relatorio) {
         g_print("Erro ao abrir os arquivos.\n");
+        g_free(caminho_relatorio);
         return;
     }
 
@@ -107,6 +142,7 @@ void gerar_relatorio_dados_ambientais(const char *cnpj) {
 
     fclose(arquivo_dados_ambientais);
     fclose(relatorio);
+    g_free(caminho_relatorio);
 }
 
 // Função de callback para o botão de Relatório de Funcionários

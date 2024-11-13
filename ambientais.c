@@ -81,7 +81,7 @@ void buscar_dados_cliente(const char *cnpj, GtkWidget **entries) {
 }
 
 // Função para salvar os dados ambientais em "dadosAmbientais.txt"
-void salvar_dados_ambientais(GtkWidget **entries) {
+void salvar_dados_ambientais(GtkWidget **entries, GtkWidget *message_label) {
     FILE *file = fopen("dadosAmbientais.txt", "a");
     if (file == NULL) {
         g_print("Erro ao abrir o arquivo de dados ambientais.\n");
@@ -101,7 +101,7 @@ void salvar_dados_ambientais(GtkWidget **entries) {
             gtk_entry_get_text(GTK_ENTRY(entries[8])));
 
     fclose(file);
-    g_print("Dados ambientais salvos com sucesso.\n");
+    gtk_label_set_text(GTK_LABEL(message_label), "Dados Ambientais salvos com sucesso!");
 }
 
 // Função callback para o botão "Buscar"
@@ -119,15 +119,16 @@ void on_buscar_clicked(GtkWidget *widget, gpointer data) {
 
 // Função callback para o botão "Inserir"
 void on_inserir_clicked(GtkWidget *widget, gpointer data) {
-    GtkWidget **entries = (GtkWidget **)data;
-    salvar_dados_ambientais(entries);
+    GtkWidget **entries = ((GtkWidget **)data);
+    GtkWidget *message_label = entries[10];
+    salvar_dados_ambientais(entries, message_label);
 }
 
 // Função para abrir a janela de atualização de dados ambientais
 void open_ambiental_window() {
-    GtkWidget *window, *vbox, *grid, *buscar_button, *inserir_button;
+    GtkWidget *window, *vbox, *grid, *buscar_button, *inserir_button, *message_label;
     GtkWidget *labels[10];
-    static GtkWidget *entries[10];
+    static GtkWidget *entries[11]; // 10 para campos + 1 para message_label
     const char *label_texts[] = {
         "Nome", "CNPJ", "Razão Social", "Telefone",
         "Endereço", "E-mail", "Data de Abertura",
@@ -159,6 +160,11 @@ void open_ambiental_window() {
             gtk_widget_override_background_color(entries[i], GTK_STATE_FLAG_NORMAL, &(GdkRGBA){0.9, 0.9, 0.9, 1});
         }
 
+        // Limita o campo CNPJ a 14 dígitos
+        if (i == 1) {
+            gtk_entry_set_max_length(GTK_ENTRY(entries[i]), 14);
+        }
+
         // Organiza os labels e campos em 4 colunas
         gtk_grid_attach(GTK_GRID(grid), labels[i], (i % 4) * 2, i / 4, 1, 1);
         gtk_grid_attach(GTK_GRID(grid), entries[i], (i % 4) * 2 + 1, i / 4, 1, 1);
@@ -171,6 +177,10 @@ void open_ambiental_window() {
     inserir_button = gtk_button_new_with_label("Inserir");
     g_signal_connect(inserir_button, "clicked", G_CALLBACK(on_inserir_clicked), entries);
     gtk_box_pack_start(GTK_BOX(vbox), inserir_button, FALSE, FALSE, 0);
+
+    message_label = gtk_label_new(NULL);
+    entries[10] = message_label; // Armazena o message_label em entries[10]
+    gtk_box_pack_start(GTK_BOX(vbox), message_label, FALSE, FALSE, 0);
 
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_widget_destroy), window);
 

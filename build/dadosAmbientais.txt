@@ -1,0 +1,33 @@
+Nome: DANIELLY MARQUES
+CNPJ: 2110202321102023
+Razão Social: DAHEN GAMES
+Telefone: (11) 93021-4021
+Endereço: RUA ANTONNIO BATISTA NANTES 100 - ITUPEVA SP
+E-mail: DANIELLYBESSA150@GMAIL.COM
+Data de Abertura: 12/11/2024
+Data de Medição: 12/11/2024
+Quantidade de Resíduos: 2110
+Estimativa de Custos: 120
+
+Nome: Henrique
+CNPJ: 10203040506070
+Razão Social: Dahen System
+Telefone: (11)91993-1229
+Endereço: Rua 3, nº144 - Itupeva/SP
+E-mail: dahensystem@empresa.com
+Data de Abertura: 12/10/2020
+Data de Medição: 13/11/2024
+Quantidade de Resíduos: 1000
+Estimativa de Custos: 500
+
+Nome: Henrique
+CNPJ: 10203040506070
+Razão Social: Dahen System
+Telefone: (11)91993-1229
+Endereço: Rua 3, nº144 - Itupeva/SP
+E-mail: dahensystem@empresa.com
+Data de Abertura: 12/10/2020
+Data de Medição: 12/11/2024
+Quantidade de Resíduos: 1500
+Estimativa de Custos: 750
+
