@@ -1,7 +1,8 @@
 #include <gtk/gtk.h>
 #include "cliente.h"
 #include "funcionarios.h"
-#include "ambientais.h"  // Inclui o arquivo ambientais.h
+#include "ambientais.h"
+#include "relatorios.h"  // Inclui o arquivo relatorios.h
 
 // Funções de callback para cada botão
 void on_cadastro_cliente_clicked(GtkWidget *widget, gpointer data) {
@@ -16,11 +17,12 @@ void on_cadastro_funcionario_clicked(GtkWidget *widget, gpointer data) {
 
 void on_atualizacao_dados_ambientais_clicked(GtkWidget *widget, gpointer data) {
     g_print("Atualização de dados ambientais\n");
-    open_ambiental_window();  // Chama a função para abrir a janela de atualização de dados ambientais
+    open_ambiental_window();
 }
 
 void on_geracao_relatorios_clicked(GtkWidget *widget, gpointer data) {
     g_print("Geração de relatórios\n");
+    open_relatorios_window();  // Chama a função para abrir a janela de relatórios
 }
 
 void open_menu_window() {
@@ -32,6 +34,7 @@ void open_menu_window() {
     gtk_window_set_title(GTK_WINDOW(window), "Menu Principal");
     gtk_window_set_default_size(GTK_WINDOW(window), 500, 300);
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -52,7 +55,7 @@ void open_menu_window() {
     g_signal_connect(atualizacao_dados_button, "clicked", G_CALLBACK(on_atualizacao_dados_ambientais_clicked), NULL);
     g_signal_connect(geracao_relatorios_button, "clicked", G_CALLBACK(on_geracao_relatorios_clicked), NULL);
 
-    // Mostra a janela do menu principal
+    // Exibir a janela do menu principal
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     gtk_widget_show_all(window);
 }

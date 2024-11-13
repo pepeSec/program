@@ -126,37 +126,42 @@ void on_inserir_clicked(GtkWidget *widget, gpointer data) {
 // Função para abrir a janela de atualização de dados ambientais
 void open_ambiental_window() {
     GtkWidget *window, *vbox, *grid, *buscar_button, *inserir_button;
-    GtkWidget *labels[10];  // Ajuste para 10 labels
-    static GtkWidget *entries[10]; // Array de campos de entrada
+    GtkWidget *labels[10];
+    static GtkWidget *entries[10];
     const char *label_texts[] = {
-        "Nome", "CNPJ", "Razão Social", "Telefone", "Endereço", "E-mail", "Data de Abertura", "Quantidade de Resíduos", "Estimativa de Custos", "Data de Medição"
+        "Nome", "CNPJ", "Razão Social", "Telefone",
+        "Endereço", "E-mail", "Data de Abertura",
+        "Quantidade de Resíduos", "Estimativa de Custos", "Data de Medição"
     };
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Atualização de Dados Ambientais");
-    gtk_window_set_default_size(GTK_WINDOW(window), 400, 550);
+    gtk_window_set_default_size(GTK_WINDOW(window), 1000, 200);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
     grid = gtk_grid_new();
-    gtk_grid_set_row_spacing(GTK_GRID(grid), 5);
-    gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
+    gtk_grid_set_row_spacing(GTK_GRID(grid), 10);
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 20);
     gtk_box_pack_start(GTK_BOX(vbox), grid, TRUE, TRUE, 0);
 
-    for (int i = 0; i < 10; i++) {  // Ajustando para 10 campos
+    for (int i = 0; i < 10; i++) {
         labels[i] = gtk_label_new(label_texts[i]);
         entries[i] = gtk_entry_new();
 
-        // Tornar todos os campos somente leitura, exceto o CNPJ, Quantidade de Resíduos, Estimativa de Custos e Data de Medição
-        if (i != 1 && i != 7 && i != 8 && i != 9) {  // O índice 1 é o CNPJ, 7 é Quantidade de Resíduos, 8 é Estimativa de Custos, e 9 é Data de Medição
-            gtk_widget_set_sensitive(entries[i], FALSE);  // Desabilita edição
-            gtk_entry_set_text(GTK_ENTRY(entries[i]), "");  // Limpar dados existentes
-            gtk_widget_override_background_color(entries[i], GTK_STATE_FLAG_NORMAL, &(GdkRGBA){0.9, 0.9, 0.9, 1});  // Cor de fundo cinza
+        // Torna campos não editáveis, exceto CNPJ, Quantidade de Resíduos, Estimativa de Custos e Data de Medição
+        if (i != 1 && i != 7 && i != 8 && i != 9) {
+            gtk_widget_set_sensitive(entries[i], FALSE);
+            gtk_entry_set_text(GTK_ENTRY(entries[i]), "");
+            gtk_widget_override_background_color(entries[i], GTK_STATE_FLAG_NORMAL, &(GdkRGBA){0.9, 0.9, 0.9, 1});
         }
 
-        gtk_grid_attach(GTK_GRID(grid), labels[i], 0, i, 1, 1);
-        gtk_grid_attach(GTK_GRID(grid), entries[i], 1, i, 1, 1);
+        // Organiza os labels e campos em 4 colunas
+        gtk_grid_attach(GTK_GRID(grid), labels[i], (i % 4) * 2, i / 4, 1, 1);
+        gtk_grid_attach(GTK_GRID(grid), entries[i], (i % 4) * 2 + 1, i / 4, 1, 1);
     }
 
     buscar_button = gtk_button_new_with_label("Buscar");
@@ -166,6 +171,8 @@ void open_ambiental_window() {
     inserir_button = gtk_button_new_with_label("Inserir");
     g_signal_connect(inserir_button, "clicked", G_CALLBACK(on_inserir_clicked), entries);
     gtk_box_pack_start(GTK_BOX(vbox), inserir_button, FALSE, FALSE, 0);
+
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_widget_destroy), window);
 
     gtk_widget_show_all(window);
 }

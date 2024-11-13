@@ -20,7 +20,6 @@ void on_salvar_cliente_clicked(GtkWidget *widget, gpointer data) {
 
     GtkWidget **entries = (GtkWidget **)g_object_get_data(G_OBJECT(data), "entries");
 
-    // Verifica se as entradas são válidas e cada campo está atribuído
     for (int i = 0; i < 7; i++) {
         if (entries[i] == NULL) {
             g_print("Erro: Campo de entrada %d é nulo.\n", i);
@@ -36,7 +35,6 @@ void on_salvar_cliente_clicked(GtkWidget *widget, gpointer data) {
     const char *email = gtk_entry_get_text(GTK_ENTRY(entries[5]));
     const char *data_abertura = gtk_entry_get_text(GTK_ENTRY(entries[6]));
 
-    // Verifica se algum campo está vazio
     if (*nome == '\0' || *cnpj == '\0' || *razao == '\0' || *telefone == '\0' ||
         *endereco == '\0' || *email == '\0' || *data_abertura == '\0') {
         g_print("Erro: Um ou mais campos de entrada estão vazios.\n");
@@ -50,41 +48,44 @@ void on_salvar_cliente_clicked(GtkWidget *widget, gpointer data) {
 void open_cliente_window() {
     GtkWidget *window, *vbox, *grid;
     GtkWidget *labels[7];
-    static GtkWidget *entries[7]; // Array estático para garantir que os dados persistam após a função retornar
+    static GtkWidget *entries[7];
     const char *label_texts[] = {
         "Nome", "CNPJ", "Razão Social", "Telefone", "Endereço", "E-mail", "Data de Abertura"
     };
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Cadastro de Clientes");
-    gtk_window_set_default_size(GTK_WINDOW(window), 500, 200);  // Ajuste do tamanho da janela
+    gtk_window_set_default_size(GTK_WINDOW(window), 550, 200);  // Ajuste da largura para 550px
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);  // Desabilita o redimensionamento da janela
+    gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);  // Centraliza a janela na tela
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
+    // Centralizando o grid no vbox
+    GtkWidget *alignment = gtk_alignment_new(0.5, 0.5, 0, 0);  // Alinhamento central
+    gtk_box_pack_start(GTK_BOX(vbox), alignment, TRUE, TRUE, 0);
+
     grid = gtk_grid_new();
     gtk_grid_set_row_spacing(GTK_GRID(grid), 5);
     gtk_grid_set_column_spacing(GTK_GRID(grid), 10);
-    gtk_box_pack_start(GTK_BOX(vbox), grid, TRUE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(alignment), grid);  // Adiciona o grid ao alinhamento centralizado
 
     for (int i = 0; i < 7; i++) {
         labels[i] = gtk_label_new(label_texts[i]);
         entries[i] = gtk_entry_new();
 
-        // Verifica imediatamente se o campo foi criado com sucesso
         if (entries[i] == NULL) {
             g_print("Erro: Não foi possível criar a entrada para o campo %d (%s)\n", i, label_texts[i]);
             return;
         }
 
-        // Distribuindo os campos em duas colunas no grid
-        int row = i / 2;  // Determina a linha
-        int col = i % 2;  // Determina a coluna (0 ou 1)
-        gtk_grid_attach(GTK_GRID(grid), labels[i], col * 2, row, 1, 1);  // Coloca o label
-        gtk_grid_attach(GTK_GRID(grid), entries[i], col * 2 + 1, row, 1, 1);  // Coloca a entrada
+        int row = i / 2;
+        int col = i % 2;
+        gtk_grid_attach(GTK_GRID(grid), labels[i], col * 2, row, 1, 1);
+        gtk_grid_attach(GTK_GRID(grid), entries[i], col * 2 + 1, row, 1, 1);
     }
 
-    // Armazena o array de entradas na janela para acessar na função de salvar
     g_object_set_data(G_OBJECT(window), "entries", entries);
 
     GtkWidget *save_button = gtk_button_new_with_label("Salvar");

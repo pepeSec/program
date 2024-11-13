@@ -20,7 +20,7 @@ include_directories(${GTK_DIR}/include/atk-1.0)
 link_directories(${GTK_DIR}/lib)
 
 # Define o executável e inclui os arquivos de código modular
-add_executable(program login.c menu.c cliente.c funcionarios.c cliente.h funcionarios.h ambientais.c)
+add_executable(program login.c menu.c cliente.c funcionarios.c cliente.h funcionarios.h ambientais.c relatorios.c relatorios.h)
 
 # Subsistema Windows para ocultar o console
 if (WIN32)
