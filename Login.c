@@ -8,6 +8,33 @@ void open_menu_window();
 const char* username_stored = "admin";
 const char* password_stored = "1234";
 
+// Função para verificar credenciais no arquivo
+int verificar_credenciais(const char *username, const char *password) {
+    FILE *file = fopen("funcionarios.txt", "r");
+    if (!file) {
+        g_print("Erro ao abrir o arquivo funcionarios.txt.\n");
+        return 0;
+    }
+
+    char linha[256], usuario_tmp[50] = "", senha_tmp[50] = "";
+    int credenciais_encontradas = 0;
+
+    while (fgets(linha, sizeof(linha), file)) {
+        if (strncmp(linha, "Usuário: ", 9) == 0) {
+            sscanf(linha, "Usuário: %[^\n]", usuario_tmp);
+        } else if (strncmp(linha, "Senha: ", 7) == 0) {
+            sscanf(linha, "Senha: %[^\n]", senha_tmp);
+            if (strcmp(username, usuario_tmp) == 0 && strcmp(password, senha_tmp) == 0) {
+                credenciais_encontradas = 1;
+                break;
+            }
+        }
+    }
+
+    fclose(file);
+    return credenciais_encontradas;
+}
+
 // Função para abrir o menu com atraso de 1 segundo
 gboolean delayed_open_menu(gpointer data) {
     GtkWidget **widgets = (GtkWidget **)data;
@@ -23,11 +50,20 @@ void on_login_button_clicked(GtkWidget *widget, gpointer data) {
     const gchar *password = gtk_entry_get_text(GTK_ENTRY(widgets[1]));
     GtkWidget *message_label = widgets[2];
 
+    // Verifica se é o login do administrador
     if (strcmp(username, username_stored) == 0 && strcmp(password, password_stored) == 0) {
         gtk_label_set_text(GTK_LABEL(message_label), "Logado com sucesso!");
         gtk_widget_set_name(message_label, "success_message");
 
-        // Atrasar a abertura do menu em 1 segundo (1000 milissegundos)
+        // Atrasar a abertura do menu em 1,5 segundos
+        g_timeout_add(1500, delayed_open_menu, widgets);
+    }
+    // Caso contrário, verifica no arquivo funcionarios.txt
+    else if (verificar_credenciais(username, password)) {
+        gtk_label_set_text(GTK_LABEL(message_label), "Logado com sucesso!");
+        gtk_widget_set_name(message_label, "success_message");
+
+        // Atrasar a abertura do menu em 1,5 segundos
         g_timeout_add(1500, delayed_open_menu, widgets);
     } else {
         gtk_label_set_text(GTK_LABEL(message_label), "Login e/ou senha incorretos.");

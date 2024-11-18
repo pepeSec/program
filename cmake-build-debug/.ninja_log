@@ -1,0 +1,12 @@
+# ninja log v6
+10	570	7535894569659863	CMakeFiles/program.dir/menu.c.obj	91e5582e2b58e1c4
+3	592	7535894569578672	CMakeFiles/program.dir/login.c.obj	cf4beb63bec7d84
+28	601	7535894569841393	CMakeFiles/program.dir/funcionarios.c.obj	386dcadcb1d34318
+16	606	7535894569721370	CMakeFiles/program.dir/cliente.c.obj	37b79b31569a79b3
+39	631	7535894569955770	CMakeFiles/program.dir/ambientais.c.obj	3add73e1ba1a91c9
+52	643	7535894570073184	CMakeFiles/program.dir/relatorios.c.obj	d38ab4440aeaa683
+643	809	7535894575985730	program.exe	193809db643f852f
+8	438	7535897591802942	CMakeFiles/program.dir/funcionarios.c.obj	386dcadcb1d34318
+439	558	7535897596114469	program.exe	193809db643f852f
+10	512	7535913005125808	CMakeFiles/program.dir/login.c.obj	cf4beb63bec7d84
+513	637	7535913010154023	program.exe	193809db643f852f
